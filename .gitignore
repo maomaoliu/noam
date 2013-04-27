@@ -1,6 +1,13 @@
-*.class
-
-# Package Files #
+**.class
+.DS_Store
 *.jar
 *.war
 *.ear
+.gradle/
+.idea/
+build/
+out/
+*.iml
+*.ipr
+*.iws
+

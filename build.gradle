@@ -1,0 +1,35 @@
+apply plugin: 'java'
+apply plugin: 'idea'
+
+repositories {
+    mavenCentral()
+    maven {
+//        url 'https://github.com/maomaoliu/mvn-repo/raw/master'
+        url "file://$buildDir/../../mvn-repo"
+    }
+}
+
+sourceSets.test.resources.srcDir 'src/test/java'
+
+sourceSets {
+    functional {
+        compileClasspath = sourceSets.main.output + configurations.testRuntime
+        runtimeClasspath = output + sourceSets.main.output + configurations.testRuntime
+    }
+}
+
+dependencies {
+    compile 'log4j:log4j:1.2.16',
+            'com.google.guava:guava:14.0',
+            'javax.servlet:javax.servlet-api:3.0.1',
+            'noam:noam-ioc:0.11',
+            'noam:noam-mvc:0.11',
+            'org.antlr:ST4:4.0.7'
+    testCompile 'org.eclipse.jetty:jetty-server:9.0.0.M5',
+            'org.eclipse.jetty:jetty-webapp:9.0.0.M5',
+            'org.eclipse.jetty:jetty-client:9.0.0.M5',
+            'junit:junit:4.8.1',
+            'org.mockito:mockito-all:1.9.0',
+            'org.seleniumhq.selenium.fluent:fluent-selenium:1.6.3'
+}
+
