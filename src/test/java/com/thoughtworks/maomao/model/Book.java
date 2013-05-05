@@ -3,6 +3,8 @@ package com.thoughtworks.maomao.model;
 import com.thoughtworks.maomao.noam.annotation.Column;
 import com.thoughtworks.maomao.noam.annotation.Model;
 
+import java.util.List;
+
 @Model
 public class Book {
 
@@ -15,6 +17,7 @@ public class Book {
     @Column
     private Float price;
 
+    private List<Comment> comments;
 
     public String getAuthor() {
         return author;
@@ -46,5 +49,13 @@ public class Book {
 
     public void setPrice(Float price) {
         this.price = price;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
     }
 }

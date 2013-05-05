@@ -19,12 +19,19 @@ public abstract class AbstractNoamTest {
         Statement statement = connection.createStatement();
         try {
             statement.execute("DROP TABLE BOOK");
+            statement.execute("DROP TABLE COMMENT");
         } catch(SQLException sqle) {
             System.out.println("Table not found, not dropping");
         }
         statement.execute("CREATE TABLE BOOK (ID INT PRIMARY KEY AUTO_INCREMENT, NAME VARCHAR(64), AUTHOR VARCHAR(64), PRICE FLOAT)");
+        statement.execute("CREATE TABLE COMMENT (ID INT PRIMARY KEY AUTO_INCREMENT, BOOK_ID INT, CONTENT VARCHAR(255), FOREIGN KEY(BOOK_ID) REFERENCES Book(ID))");
+
         statement.execute("INSERT INTO BOOK (NAME, AUTHOR, PRICE) VALUES('Java Book', 'maomao', 12.34)");
         statement.execute("INSERT INTO BOOK (NAME, AUTHOR, PRICE) VALUES('Ruby book', 'oamoam', 9.82)");
+
+        statement.execute("INSERT INTO COMMENT (BOOK_ID, CONTENT) VALUES(1, 'nice java book')");
+        statement.execute("INSERT INTO COMMENT (BOOK_ID, CONTENT) VALUES(1, 'a little boring')");
+        statement.execute("INSERT INTO COMMENT (BOOK_ID, CONTENT) VALUES(2, 'worth reading, recommended')");
 
         statement.close();
         connection.close();

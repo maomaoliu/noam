@@ -1,7 +1,7 @@
 package com.thoughtworks.maomao.noam;
 
 import com.thoughtworks.maomao.core.util.ModelAssembler;
-import com.thoughtworks.maomao.core.util.NameResolver;
+import net.sf.cglib.proxy.Enhancer;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -15,15 +15,18 @@ public class Criteria<T> {
     private Class<T> klass;
     private ModelInfo modelInfo;
     private SessionFactory sessionFactory;
+    private NoamMethodInterceptor methodInterceptor;
+    private String predication;
 
     public Criteria(Class<T> klass, ModelInfo modelInfo, SessionFactory sessionFactory) {
         this.klass = klass;
         this.modelInfo = modelInfo;
         this.sessionFactory = sessionFactory;
+        methodInterceptor = new NoamMethodInterceptor(sessionFactory);
     }
 
     public List<T> list() throws SQLException {
-        List<T> result = new ArrayList<T>();
+        List<T> result = new ArrayList();
         ResultSet resultSet = sessionFactory.executeQuery(sql());
         try {
             while (resultSet.next()) {
@@ -37,14 +40,26 @@ public class Criteria<T> {
 
     private T createInstance(ResultSet resultSet) throws IllegalAccessException, InstantiationException, SQLException {
         List<String> columns = modelInfo.getColumns();
-        Map<String, String[]> parameters = new HashMap<String, String[]>();
+        T instance = (T) Enhancer.create(klass, methodInterceptor);
+        Map<String, String> parameters = new HashMap();
         for (String column : columns) {
-            parameters.put(NameResolver.getInstanceName(klass) + "." + column, new String[]{resultSet.getObject(column).toString()});
+            parameters.put(column, resultSet.getObject(column).toString());
         }
-        return new ModelAssembler().assembleModel(parameters, klass);
+
+        new ModelAssembler().assembleModel(parameters, instance);
+        return instance;
     }
 
     private String sql() {
-        return String.format("SELECT * FROM %s", modelInfo.getTableName());
+        String sql = String.format("SELECT * FROM %s", modelInfo.getTableName());
+        if (predication != null) {
+            sql += " where " + predication;
+        }
+        return sql;
+    }
+
+    public Criteria where(String predication) {
+        this.predication = predication;
+        return this;
     }
 }

@@ -9,7 +9,7 @@ import java.util.List;
 public class ModelInfo {
 
     private String tableName;
-    private List<String> columns = new ArrayList<String>();
+    private List<String> columns = new ArrayList();
 
     public ModelInfo(Class modelClass) {
         tableName = modelClass.getSimpleName().toUpperCase();

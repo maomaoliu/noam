@@ -10,13 +10,12 @@ import java.util.Set;
 
 public class SessionFactory {
 
-    private final WheelContainer wheelContainer;
     private final Set<Class> modelClasses;
-    private final Map<Class, ModelInfo> modelInfoMap = new HashMap<Class, ModelInfo>();
+    private final Map<Class, ModelInfo> modelInfoMap = new HashMap();
     private final Connection connection;
 
     public SessionFactory(String packageName) {
-        wheelContainer = new WheelContainer(packageName, new Class[]{Model.class});
+        WheelContainer wheelContainer = new WheelContainer(packageName, new Class[]{Model.class});
         modelClasses = wheelContainer.getAllClassWithAnnotation(Model.class);
         for (Class modelClass : modelClasses) {
             modelInfoMap.put(modelClass, new ModelInfo(modelClass));
@@ -33,11 +32,15 @@ public class SessionFactory {
         if (!modelClasses.contains(klass)) {
             throw new RuntimeException("not a model class");
         }
-        return new Criteria<T>(klass, modelInfoMap.get(klass), this);
+        return new Criteria(klass, modelInfoMap.get(klass), this);
     }
 
     public ResultSet executeQuery(String sql) throws SQLException {
         PreparedStatement ps = connection.prepareStatement(sql);
         return ps.executeQuery();
+    }
+
+    public boolean isModel(Class klass) {
+        return modelClasses.contains(klass);
     }
 }
