@@ -11,6 +11,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class SessionFactoryTest extends AbstractNoamTest {
 
@@ -24,7 +25,7 @@ public class SessionFactoryTest extends AbstractNoamTest {
     @Test
     public void should_read_book_list() throws Exception {
         List<Book> books = sessionFactory.from(Book.class).list();
-        assertEquals(2, books.size());
+        assertTrue(books.size() >= 2);
         Book book = books.get(0);
 
         assertEquals("Java Book", book.getName());
