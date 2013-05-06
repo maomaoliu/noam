@@ -4,8 +4,8 @@ apply plugin: 'idea'
 repositories {
     mavenCentral()
     maven {
-//        url 'https://github.com/maomaoliu/mvn-repo/raw/master'
-        url "file://$buildDir/../../mvn-repo"
+        url 'https://github.com/maomaoliu/mvn-repo/raw/master'
+//        url "file://$buildDir/../../mvn-repo"
     }
 }
 
