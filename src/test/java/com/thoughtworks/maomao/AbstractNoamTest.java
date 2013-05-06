@@ -10,7 +10,7 @@ import java.sql.Statement;
 public abstract class AbstractNoamTest {
 
     @BeforeClass
-    public static void initDB() throws Exception{
+    public static void initDB() throws Exception {
 //        Server server = Server.createTcpServer("-trace", "-tcp", "-web", "-webPort", "7786").start();
         Class.forName("org.h2.Driver");
         Connection connection = DriverManager.
@@ -20,7 +20,7 @@ public abstract class AbstractNoamTest {
         try {
             statement.execute("DROP TABLE BOOK");
             statement.execute("DROP TABLE COMMENT");
-        } catch(SQLException sqle) {
+        } catch (SQLException sqle) {
             System.out.println("Table not found, not dropping");
         }
         statement.execute("CREATE TABLE BOOK (ID INT PRIMARY KEY AUTO_INCREMENT, NAME VARCHAR(64), AUTHOR VARCHAR(64), PRICE FLOAT)");

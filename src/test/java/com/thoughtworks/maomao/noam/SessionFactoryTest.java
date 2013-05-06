@@ -6,17 +6,13 @@ import com.thoughtworks.maomao.model.Comment;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
-public class SessionFactoryTest extends AbstractNoamTest{
+public class SessionFactoryTest extends AbstractNoamTest {
 
     private SessionFactory sessionFactory;
 

@@ -5,7 +5,6 @@ import com.thoughtworks.maomao.noam.annotation.Column;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
 
@@ -73,7 +72,7 @@ public class UpsertCriteria {
             Object value = FieldValueUtil.getValue(instance, field.getName());
             append(valuesBuffer, field.getName(), value);
         }
-        Set<Map.Entry<String,Object>> entries = extraParameters.entrySet();
+        Set<Map.Entry<String, Object>> entries = extraParameters.entrySet();
         for (Map.Entry<String, Object> entry : entries) {
             append(valuesBuffer, entry.getKey(), entry.getValue());
         }
@@ -109,7 +108,7 @@ public class UpsertCriteria {
             appendValue(valuesBuffer, value);
         }
 
-        Set<Map.Entry<String,Object>> entries = extraParameters.entrySet();
+        Set<Map.Entry<String, Object>> entries = extraParameters.entrySet();
         for (Map.Entry<String, Object> entry : entries) {
             columnsBuffer.append(entry.getKey()).append(", ");
             appendValue(valuesBuffer, entry.getValue());
