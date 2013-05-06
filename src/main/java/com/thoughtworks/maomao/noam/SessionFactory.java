@@ -40,7 +40,19 @@ public class SessionFactory {
         return ps.executeQuery();
     }
 
+    public boolean execute(String sql) throws SQLException {
+        return connection.createStatement().execute(sql);
+    }
+
     public boolean isModel(Class klass) {
         return modelClasses.contains(klass);
+    }
+
+    public boolean save(Object object) throws SQLException {
+        Class<?> klass = object.getClass();
+        if (!modelClasses.contains(klass)) {
+            throw new RuntimeException("not a model class");
+        }
+        return new UpsertCriteria(object, modelInfoMap.get(klass), this).upsert();
     }
 }
