@@ -5,9 +5,18 @@ import java.lang.reflect.Method;
 import static com.google.common.base.CaseFormat.LOWER_CAMEL;
 import static com.google.common.base.CaseFormat.UPPER_CAMEL;
 
-public class FieldValueFetcher {
+public class FieldValueUtil {
     public static Integer getPrimaryKey(Object instance) {
         return (Integer) getValue(instance, "id");
+    }
+
+    public static void setPrimaryKey(Object instance, Integer value) {
+        try {
+            Method method = instance.getClass().getMethod("setId", Integer.class);
+            method.invoke(instance, value);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static Object getValue(Object instance, String fieldName) {

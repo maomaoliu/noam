@@ -32,7 +32,7 @@ public class NoamMethodInterceptor implements MethodInterceptor {
                 if (returnType == List.class) {
                     String instanceName = NameResolver.getInstanceName(obj.getClass());
                     instanceName = instanceName.substring(0, instanceName.indexOf("$$"));
-                    return sessionFactory.from(genericType).where(instanceName + "_id = " + FieldValueFetcher.getPrimaryKey(obj)).list();
+                    return sessionFactory.from(genericType).where(instanceName + "_id = " + FieldValueUtil.getPrimaryKey(obj)).list();
                 }
                 return returnType.newInstance();
             }

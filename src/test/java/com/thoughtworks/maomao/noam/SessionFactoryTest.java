@@ -9,9 +9,11 @@ import org.junit.Test;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public class SessionFactoryTest extends AbstractNoamTest{
@@ -45,10 +47,19 @@ public class SessionFactoryTest extends AbstractNoamTest{
         book.setName("a new book");
         book.setAuthor("anonymous");
         book.setPrice(9.82f);
+
+        Comment comment = new Comment();
+        comment.setContent("god");
+        book.setComments(Arrays.asList(comment));
+
         sessionFactory.save(book);
 
         List<Book> booksAfter = sessionFactory.from(Book.class).list();
         assertEquals(1, booksAfter.size() - booksBefore.size());
+        assertNotNull(book.getId());
+        Book newBook = booksAfter.get(booksAfter.size() - 1);
+        assertEquals(1, newBook.getComments().size());
+        assertEquals("god", newBook.getComments().get(0).getContent());
     }
 
     @Test

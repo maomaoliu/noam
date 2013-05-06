@@ -10,8 +10,10 @@ public class ModelInfo {
 
     private String tableName;
     private List<String> columns = new ArrayList();
+    private Class modelClass;
 
     public ModelInfo(Class modelClass) {
+        this.modelClass = modelClass;
         tableName = modelClass.getSimpleName().toUpperCase();
         Field[] fields = modelClass.getDeclaredFields();
         for (Field field : fields) {
@@ -28,5 +30,9 @@ public class ModelInfo {
 
     public List<String> getColumns() {
         return columns;
+    }
+
+    public Class getModelClass() {
+        return modelClass;
     }
 }
