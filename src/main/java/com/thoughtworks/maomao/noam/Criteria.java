@@ -58,8 +58,20 @@ public class Criteria<T> {
         return sql;
     }
 
-    public Criteria where(String predication) {
+    public Criteria<T> where(String predication) {
         this.predication = predication;
         return this;
+    }
+
+    public T unique() throws SQLException {
+        ResultSet resultSet = sessionFactory.executeQuery(sql());
+        try {
+            if (resultSet.next()) {
+                return createInstance(resultSet);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

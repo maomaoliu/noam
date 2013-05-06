@@ -51,4 +51,21 @@ public class SessionFactoryTest extends AbstractNoamTest{
         assertEquals(1, booksAfter.size() - booksBefore.size());
     }
 
+    @Test
+    public void should_update_book() throws Exception {
+        Book book = sessionFactory.from(Book.class).where("id = 1").unique();
+        assertEquals("Java Book", book.getName());
+        assertEquals("maomao", book.getAuthor());
+        assertEquals(12.34, book.getPrice(), 0.001);
+
+        book.setName("Java Book 2");
+        book.setAuthor("maomao liu");
+        book.setPrice(21.65f);
+        sessionFactory.save(book);
+
+        Book newBook = sessionFactory.from(Book.class).where("id = 1").unique();
+        assertEquals("Java Book 2", newBook.getName());
+        assertEquals("maomao liu", newBook.getAuthor());
+        assertEquals(21.65, newBook.getPrice(), 0.001);
+    }
 }

@@ -14,7 +14,6 @@ public class UpsertCriteria {
 
     public UpsertCriteria(Object instance, ModelInfo modelInfo, SessionFactory sessionFactory) {
         this.instance = instance;
-        this.klass = klass;
         this.modelInfo = modelInfo;
         this.sessionFactory = sessionFactory;
         methodInterceptor = new NoamMethodInterceptor(sessionFactory);
@@ -24,11 +23,34 @@ public class UpsertCriteria {
         Integer primaryKey = FieldValueFetcher.getPrimaryKey(instance);
         String sql = null;
         if (primaryKey != null && primaryKey > 0) {
-
+            sql = updateSql();
         } else {
             sql = insertSql();
         }
         return sessionFactory.execute(sql);
+    }
+
+    private String updateSql() {
+        StringBuffer valuesBuffer = new StringBuffer();
+        Field[] fields = instance.getClass().getSuperclass().getDeclaredFields();
+        Integer primaryKey = FieldValueFetcher.getPrimaryKey(instance);
+
+        for (Field field : fields) {
+            field.setAccessible(true);
+            if (!field.isAnnotationPresent(Column.class) || field.getName().equals("id")) {
+                continue;
+            }
+            valuesBuffer.append(field.getName()).append("=");
+            Object value = FieldValueFetcher.getValue(instance, field.getName());
+            if (value instanceof String) {
+                valuesBuffer.append("'").append(value).append("'");
+            } else {
+                valuesBuffer.append(value);
+            }
+            valuesBuffer.append(", ");
+        }
+        String values = valuesBuffer.substring(0, valuesBuffer.length() - 2).toString();
+        return String.format("UPDATE %s SET %s WHERE id = %d", modelInfo.getTableName(), values, primaryKey);
     }
 
     private String insertSql() {

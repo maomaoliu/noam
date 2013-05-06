@@ -50,9 +50,13 @@ public class SessionFactory {
 
     public boolean save(Object object) throws SQLException {
         Class<?> klass = object.getClass();
-        if (!modelClasses.contains(klass)) {
+        if (!modelClasses.contains(klass) && !modelClasses.contains(klass.getSuperclass())) {
             throw new RuntimeException("not a model class");
         }
-        return new UpsertCriteria(object, modelInfoMap.get(klass), this).upsert();
+        ModelInfo modelInfo = modelInfoMap.get(klass);
+        if (modelInfo == null) {
+            modelInfo = modelInfoMap.get(klass.getSuperclass());
+        }
+        return new UpsertCriteria(object, modelInfo, this).upsert();
     }
 }
