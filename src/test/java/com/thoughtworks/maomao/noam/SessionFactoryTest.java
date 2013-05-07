@@ -6,26 +6,27 @@ import com.thoughtworks.maomao.model.Comment;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 public class SessionFactoryTest extends AbstractNoamTest {
 
     private SessionFactory sessionFactory;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() throws SQLException {
+        super.setUp();
         sessionFactory = new SessionFactory("com.thoughtworks.maomao.model");
     }
 
     @Test
     public void should_read_book_list() throws Exception {
         List<Book> books = sessionFactory.from(Book.class).list();
-        assertTrue(books.size() >= 2);
+        assertEquals(2, books.size());
         Book book = books.get(0);
 
         assertEquals("Java Book", book.getName());

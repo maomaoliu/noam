@@ -1,5 +1,6 @@
 package com.thoughtworks.maomao;
 
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
 import java.sql.Connection;
@@ -9,13 +10,17 @@ import java.sql.Statement;
 
 public abstract class AbstractNoamTest {
 
+    private static Connection connection;
+
     @BeforeClass
     public static void initDB() throws Exception {
 //        Server server = Server.createTcpServer("-trace", "-tcp", "-web", "-webPort", "7786").start();
         Class.forName("org.h2.Driver");
-        Connection connection = DriverManager.
+        connection = DriverManager.
                 getConnection("jdbc:h2:~/test", "sa", "");
+    }
 
+    public void setUp() throws SQLException {
         Statement statement = connection.createStatement();
         try {
             statement.execute("DROP TABLE BOOK");
@@ -34,6 +39,10 @@ public abstract class AbstractNoamTest {
         statement.execute("INSERT INTO COMMENT (BOOK_ID, CONTENT) VALUES(2, 'worth reading, recommended')");
 
         statement.close();
+    }
+
+    @AfterClass
+    public static void close() throws SQLException {
         connection.close();
     }
 }
