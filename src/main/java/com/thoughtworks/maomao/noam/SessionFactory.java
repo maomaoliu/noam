@@ -63,4 +63,16 @@ public class SessionFactory {
         }
         return new UpsertCriteria(object, modelInfo, this).withExtraParameter(extraParameters).upsert();
     }
+
+    public int delete(Object object) throws SQLException {
+        Class<?> klass = object.getClass();
+        if (!modelClasses.contains(klass) && !modelClasses.contains(klass.getSuperclass())) {
+            throw new RuntimeException("not a model class");
+        }
+        ModelInfo modelInfo = modelInfoMap.get(klass);
+        if (modelInfo == null) {
+            modelInfo = modelInfoMap.get(klass.getSuperclass());
+        }
+        return new DeleteCriteria(object, modelInfo, this).delete();
+    }
 }

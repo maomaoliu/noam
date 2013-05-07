@@ -10,8 +10,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 public class SessionFactoryTest extends AbstractNoamTest {
 
@@ -76,5 +75,21 @@ public class SessionFactoryTest extends AbstractNoamTest {
         assertEquals("Java Book 2", newBook.getName());
         assertEquals("maomao liu", newBook.getAuthor());
         assertEquals(21.65, newBook.getPrice(), 0.001);
+    }
+
+    @Test
+    public void should_delete_book() throws SQLException {
+        Book book = sessionFactory.from(Book.class).where("id = 1").unique();
+        assertEquals("Java Book", book.getName());
+        List<Comment> comments = book.getComments();
+        assertEquals(2, comments.size());
+
+        int result = sessionFactory.delete(book);
+
+        assertEquals(1, result);
+        assertNull(sessionFactory.from(Book.class).where("id = 1").unique());
+        for (Comment comment : comments) {
+            assertNull(sessionFactory.from(Comment.class).where("id = " + comment.getId()).unique());
+        }
     }
 }
