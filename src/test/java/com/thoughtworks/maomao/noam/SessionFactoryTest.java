@@ -92,4 +92,20 @@ public class SessionFactoryTest extends AbstractNoamTest {
             assertNull(sessionFactory.from(Comment.class).where("id = " + comment.getId()).unique());
         }
     }
+
+    @Test
+    public void should_avoid_n_plus_1() throws SQLException {
+        List<Book> books = sessionFactory.from(Book.class).where("price > 1").list();
+        assertEquals(2, books.size());
+        for (Book book : books) {
+            List<Comment> comments = book.getComments();
+            assertEquals(2, comments.size());
+            break;
+        }
+
+        Comment comment = sessionFactory.from(Comment.class).where("id = 3").unique();
+        sessionFactory.delete(comment);
+
+        assertEquals((Integer)3, books.get(1).getComments().get(0).getId());;
+    }
 }

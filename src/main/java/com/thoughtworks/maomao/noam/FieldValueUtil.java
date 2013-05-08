@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 
 import static com.google.common.base.CaseFormat.LOWER_CAMEL;
 import static com.google.common.base.CaseFormat.UPPER_CAMEL;
+import static com.google.common.base.CaseFormat.UPPER_UNDERSCORE;
 
 public class FieldValueUtil {
     public static Integer getPrimaryKey(Object instance) {
@@ -21,11 +22,27 @@ public class FieldValueUtil {
 
     public static Object getValue(Object instance, String fieldName) {
         try {
-            Method method = instance.getClass().getMethod(String.format("get%s", LOWER_CAMEL.to(UPPER_CAMEL, fieldName)));
+            Method method = instance.getClass().getMethod(String.format("get%s", toLowerCamel(fieldName)));
             return method.invoke(instance);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public static String toLowerCamel(String fieldName) {
+        return LOWER_CAMEL.to(UPPER_CAMEL, fieldName);
+    }
+
+    public static String toPlural(String name) {
+        if (name.endsWith("s")) {
+            return name + "es";
+        } else {
+            return name + "s";
+        }
+    }
+
+    public static String toUpperUnderscore(String name) {
+        return UPPER_CAMEL.to(UPPER_UNDERSCORE, name);
     }
 }

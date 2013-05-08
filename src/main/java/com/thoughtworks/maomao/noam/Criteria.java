@@ -3,6 +3,8 @@ package com.thoughtworks.maomao.noam;
 import com.thoughtworks.maomao.core.util.ModelAssembler;
 import net.sf.cglib.proxy.Enhancer;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -26,16 +28,57 @@ public class Criteria<T> {
     }
 
     public List<T> list() throws SQLException {
-        List<T> result = new ArrayList();
-        ResultSet resultSet = sessionFactory.executeQuery(sql());
+        return list(sql());
+    }
+
+    public List<T> list(String sql) throws SQLException {
+        return listWithSuperId(sql, null).get(0);
+    }
+
+    public Map<Integer,List<T>> listWithSuperId(String sql, String superIdName) throws SQLException {
+
+        Map<Integer,List<T>> map = new HashMap<>();
+
+        ResultSet resultSet = sessionFactory.executeQuery(sql);
         try {
             while (resultSet.next()) {
-                result.add(createInstance(resultSet));
+                T instance = createInstance(resultSet);
+                Integer superId = 0;
+                if(superIdName != null){
+                    superId = (Integer) resultSet.getObject(superIdName);
+                }
+                List<T> list = map.get(superId);
+                if(list != null){
+                    list.add(instance);
+                } else {
+                    list = createList();
+                    list.add(instance);
+                    map.put(superId, list);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return result;
+        return map;
+    }
+
+    private List<T> createList() {
+        List<T> list;
+        list = (List<T>) Enhancer.create(
+                ArrayList.class,
+                new Class[]{CollectionInterface.class},
+                methodInterceptor);
+        try {
+            Method method = list.getClass().getMethod("initCollection");
+            method.invoke(list);
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        return list;
     }
 
     private T createInstance(ResultSet resultSet) throws IllegalAccessException, InstantiationException, SQLException {

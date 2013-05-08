@@ -14,7 +14,7 @@ public class ModelInfo {
 
     public ModelInfo(Class modelClass) {
         this.modelClass = modelClass;
-        tableName = modelClass.getSimpleName().toUpperCase();
+        tableName = FieldValueUtil.toUpperUnderscore(modelClass.getSimpleName());
         Field[] fields = modelClass.getDeclaredFields();
         for (Field field : fields) {
             field.setAccessible(true);
