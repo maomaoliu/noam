@@ -26,6 +26,12 @@ public class CommentServiceImpl implements CommentService{
         return comment;
     }
 
+    @Override
+    public void deleteComment(Integer id) {
+        Comment comment = sessionFactory.from(Comment.class).getById(id);
+        sessionFactory.delete(comment);
+    }
+
     public void setSessionFactory(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }

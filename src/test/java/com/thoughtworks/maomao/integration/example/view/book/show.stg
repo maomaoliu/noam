@@ -8,8 +8,10 @@
             <h3>Author: $book.author$</h3>
             <p><a href="$contextPath$/comment?method=create&book_id=$book.id$">Add Comment</a></p>
             $book.comments: { comment |
+            <hr/>
                 <p> Comment: $comment.content$ <p>
                 <p>    Add By - $comment.author$ </p>
+                <p style="padding-left: 50px; font-size: 0.8em"><a href="$contextPath$/comment?id=$comment.id$&book_id=$book.id$&method=delete">Delete Comment</a></p>
             }$
         </div>
     </body>

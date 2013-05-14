@@ -31,6 +31,11 @@ public class CommentController {
         return "book?method=show&id=" + comment.getBook().getId();
     }
 
+    public String delete(@Param(value = "id") Integer id, @Param(value = "book_id") Integer bookId) {
+        commentService.deleteComment(id);
+        return "book?method=show&id=" + bookId;
+    }
+
     public void setCommentService(CommentService commentService) {
         this.commentService = commentService;
     }
