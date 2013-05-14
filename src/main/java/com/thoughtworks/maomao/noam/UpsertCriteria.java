@@ -22,12 +22,7 @@ public class UpsertCriteria {
 
     public boolean upsert() throws Exception {
         Integer primaryKey = FieldValueUtil.getPrimaryKey(instance);
-        String sql;
-        if (primaryKey != null && primaryKey > 0) {
-            sql = updateSql();
-        } else {
-            sql = insertSql();
-        }
+        String sql = chooseSQL(primaryKey);
         Statement statement = sessionFactory.getStatement();
         boolean result = statement.execute(sql);
         ResultSet generatedKeys = statement.getGeneratedKeys();
@@ -36,6 +31,23 @@ public class UpsertCriteria {
         }
         upsertAssociation();
         return result;
+    }
+
+    public UpsertCriteria withExtraParameter(Map<String, Object> extraParameters) {
+        if (extraParameters != null) {
+            this.extraParameters = extraParameters;
+        }
+        return this;
+    }
+
+    private String chooseSQL(Integer primaryKey) {
+        String sql;
+        if (primaryKey != null && primaryKey > 0) {
+            sql = updateSql();
+        } else {
+            sql = insertSql();
+        }
+        return sql;
     }
 
     private void upsertAssociation() throws Exception {
@@ -81,20 +93,6 @@ public class UpsertCriteria {
         return String.format("UPDATE %s SET %s WHERE id = %d", modelInfo.getTableName(), values, primaryKey);
     }
 
-    private void append(StringBuffer buffer, String name, Object value) {
-        buffer.append(name).append("=");
-        appendValue(buffer, value);
-    }
-
-    private void appendValue(StringBuffer buffer, Object value) {
-        if (value instanceof String) {
-            buffer.append("'").append(value).append("'");
-        } else {
-            buffer.append(value);
-        }
-        buffer.append(", ");
-    }
-
     private String insertSql() {
         StringBuffer columnsBuffer = new StringBuffer();
         StringBuffer valuesBuffer = new StringBuffer();
@@ -121,10 +119,18 @@ public class UpsertCriteria {
         return String.format("INSERT INTO %s (%s) VALUES (%s)", modelInfo.getTableName(), columns, values);
     }
 
-    public UpsertCriteria withExtraParameter(Map<String, Object> extraParameters) {
-        if (extraParameters != null) {
-            this.extraParameters = extraParameters;
-        }
-        return this;
+    private void append(StringBuffer buffer, String name, Object value) {
+        buffer.append(name).append("=");
+        appendValue(buffer, value);
     }
+
+    private void appendValue(StringBuffer buffer, Object value) {
+        if (value instanceof String) {
+            buffer.append("'").append(value).append("'");
+        } else {
+            buffer.append(value);
+        }
+        buffer.append(", ");
+    }
+
 }

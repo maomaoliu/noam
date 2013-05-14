@@ -20,12 +20,7 @@ public class SessionFactory {
         for (Class modelClass : modelClasses) {
             modelInfoMap.put(modelClass, new ModelInfo(modelClass));
         }
-        try {
-            Class.forName(driver);
-            connection = DriverManager.getConnection(ConnectionUrl);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        connection = getConnection(driver, ConnectionUrl);
     }
 
     public <T> Criteria<T> from(Class<T> klass) {
@@ -52,37 +47,51 @@ public class SessionFactory {
         return connection.createStatement();
     }
 
-    public boolean save(Object object, Map<String, Object> extraParameters){
+    public boolean save(Object object, Map<String, Object> extraParameters) {
         Class<?> klass = object.getClass();
-        if (!modelClasses.contains(klass) && !modelClasses.contains(klass.getSuperclass())) {
-            throw new RuntimeException("not a model class");
-        }
-        ModelInfo modelInfo = modelInfoMap.get(klass);
-        if (modelInfo == null) {
-            modelInfo = modelInfoMap.get(klass.getSuperclass());
-        }
+        checkModel(klass);
+        ModelInfo modelInfo = getModelInfo(klass);
         try {
             return new UpsertCriteria(object, modelInfo, this).withExtraParameter(extraParameters).upsert();
         } catch (Exception e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         }
         return false;
     }
 
     public int delete(Object object) {
         Class<?> klass = object.getClass();
+        checkModel(klass);
+        ModelInfo modelInfo = getModelInfo(klass);
+        try {
+            return new DeleteCriteria(object, modelInfo, this).delete();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
+    private void checkModel(Class<?> klass) {
         if (!modelClasses.contains(klass) && !modelClasses.contains(klass.getSuperclass())) {
             throw new RuntimeException("not a model class");
         }
+    }
+
+    private ModelInfo getModelInfo(Class<?> klass) {
         ModelInfo modelInfo = modelInfoMap.get(klass);
         if (modelInfo == null) {
             modelInfo = modelInfoMap.get(klass.getSuperclass());
         }
-        try {
-            return new DeleteCriteria(object, modelInfo, this).delete();
-        } catch (SQLException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-        return -1;
+        return modelInfo;
     }
+
+    private Connection getConnection(String driver, String ConnectionUrl) {
+        try {
+            Class.forName(driver);
+            return DriverManager.getConnection(ConnectionUrl);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }
