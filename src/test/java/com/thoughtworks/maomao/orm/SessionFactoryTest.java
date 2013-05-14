@@ -19,7 +19,7 @@ public class SessionFactoryTest extends AbstractNoamTest {
     @Before
     public void setUp() throws SQLException {
         super.setUp();
-        sessionFactory = new SessionFactory("com.thoughtworks.maomao.orm.model");
+        sessionFactory = new SessionFactory("com.thoughtworks.maomao.orm.model", "org.h2.Driver", "jdbc:h2:~/test;USER=sa");
     }
 
     @Test

@@ -14,15 +14,15 @@ public class SessionFactory {
     private final Map<Class, ModelInfo> modelInfoMap = new HashMap();
     private final Connection connection;
 
-    public SessionFactory(String packageName) {
+    public SessionFactory(String packageName, String driver, String ConnectionUrl) {
         WheelContainer wheelContainer = new WheelContainer(packageName, new Class[]{Model.class});
         modelClasses = wheelContainer.getAllClassWithAnnotation(Model.class);
         for (Class modelClass : modelClasses) {
             modelInfoMap.put(modelClass, new ModelInfo(modelClass));
         }
         try {
-            Class.forName("org.h2.Driver");
-            connection = DriverManager.getConnection("jdbc:h2:~/test", "sa", "");
+            Class.forName(driver);
+            connection = DriverManager.getConnection(ConnectionUrl);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

@@ -8,6 +8,6 @@ import com.thoughtworks.maomao.noam.SessionFactory;
 public class DBConfig {
     @Bean
     public SessionFactory sessionFactory(){
-        return new SessionFactory("com.thoughtworks.maomao.integration.example.model");
+        return new SessionFactory("com.thoughtworks.maomao.integration.example.model", "org.h2.Driver", "jdbc:h2:~/test;USER=sa");
     }
 }

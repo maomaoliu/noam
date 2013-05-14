@@ -1,23 +1,16 @@
-package com.thoughtworks.maomao.integration.browser;
+package com.thoughtworks.maomao.integration;
 
-import com.thoughtworks.maomao.integration.AbstractWebTest;
+import com.thoughtworks.maomao.integration.example.DBInit;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.webapp.WebAppContext;
 
 import java.io.File;
 import java.net.MalformedURLException;
-import java.sql.SQLException;
 
 public class WebServer {
 
     private Server jetty;
-    AbstractWebTest abstractWebTest = new AbstractWebTest() {
-        @Override
-        public void setUp() throws SQLException {
-            super.setUp();
-        }
-    };
-
+    private DBInit dbInit;
 
     public WebServer(int port, String webApp, String contextPath) throws MalformedURLException {
         jetty = new Server(port);
@@ -28,11 +21,11 @@ public class WebServer {
         context.setContextPath(contextPath);
         context.setParentLoaderPriority(true);
         jetty.setHandler(context);
-
+        dbInit = new DBInit();
     }
 
     public WebServer start() throws Exception {
-        abstractWebTest.setUp();
+        dbInit.executeSqls();
         jetty.start();
         return this;
     }
@@ -52,13 +45,13 @@ public class WebServer {
         } else {
             server = new WebServer(Integer.parseInt(args[0]), args[1], args[2]);
         }
-        AbstractWebTest.initDB();
+        DBInit.connect();
         server.start();
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             public void run() {
                 server.stop();
                 try {
-                    AbstractWebTest.close();
+                    DBInit.close();
                 } catch (Exception e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }
