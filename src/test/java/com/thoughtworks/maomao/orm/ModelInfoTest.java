@@ -1,6 +1,7 @@
-package com.thoughtworks.maomao.noam;
+package com.thoughtworks.maomao.orm;
 
-import com.thoughtworks.maomao.model.Book;
+import com.thoughtworks.maomao.noam.ModelInfo;
+import com.thoughtworks.maomao.orm.model.Book;
 import org.junit.Before;
 import org.junit.Test;
 

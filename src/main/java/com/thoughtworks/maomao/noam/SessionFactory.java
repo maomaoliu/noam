@@ -44,7 +44,7 @@ public class SessionFactory {
         return modelClasses.contains(klass);
     }
 
-    public boolean save(Object object) throws Exception {
+    public boolean save(Object object) {
         return save(object, null);
     }
 
@@ -52,7 +52,7 @@ public class SessionFactory {
         return connection.createStatement();
     }
 
-    public boolean save(Object object, Map<String, Object> extraParameters) throws Exception {
+    public boolean save(Object object, Map<String, Object> extraParameters){
         Class<?> klass = object.getClass();
         if (!modelClasses.contains(klass) && !modelClasses.contains(klass.getSuperclass())) {
             throw new RuntimeException("not a model class");
@@ -61,10 +61,15 @@ public class SessionFactory {
         if (modelInfo == null) {
             modelInfo = modelInfoMap.get(klass.getSuperclass());
         }
-        return new UpsertCriteria(object, modelInfo, this).withExtraParameter(extraParameters).upsert();
+        try {
+            return new UpsertCriteria(object, modelInfo, this).withExtraParameter(extraParameters).upsert();
+        } catch (Exception e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        return false;
     }
 
-    public int delete(Object object) throws SQLException {
+    public int delete(Object object) {
         Class<?> klass = object.getClass();
         if (!modelClasses.contains(klass) && !modelClasses.contains(klass.getSuperclass())) {
             throw new RuntimeException("not a model class");
@@ -73,6 +78,11 @@ public class SessionFactory {
         if (modelInfo == null) {
             modelInfo = modelInfoMap.get(klass.getSuperclass());
         }
-        return new DeleteCriteria(object, modelInfo, this).delete();
+        try {
+            return new DeleteCriteria(object, modelInfo, this).delete();
+        } catch (SQLException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        return -1;
     }
 }

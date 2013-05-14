@@ -27,20 +27,20 @@ public class Criteria<T> {
         methodInterceptor = new NoamMethodInterceptor(sessionFactory);
     }
 
-    public List<T> list() throws SQLException {
+    public List<T> list(){
         return list(sql());
     }
 
-    public List<T> list(String sql) throws SQLException {
+    public List<T> list(String sql) {
         return listWithSuperId(sql, null).get(0);
     }
 
-    public Map<Integer,List<T>> listWithSuperId(String sql, String superIdName) throws SQLException {
+    public Map<Integer,List<T>> listWithSuperId(String sql, String superIdName) {
 
         Map<Integer,List<T>> map = new HashMap<>();
 
-        ResultSet resultSet = sessionFactory.executeQuery(sql);
         try {
+            ResultSet resultSet = sessionFactory.executeQuery(sql);
             while (resultSet.next()) {
                 T instance = createInstance(resultSet);
                 Integer superId = 0;
@@ -114,6 +114,16 @@ public class Criteria<T> {
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+        return null;
+    }
+
+    public T getById(Integer id) {
+        predication = "id = " + id;
+        try {
+            return unique();
+        } catch (SQLException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
         return null;
     }

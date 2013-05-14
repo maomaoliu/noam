@@ -1,0 +1,13 @@
+<html>
+    <body>
+        <div>
+        <form action="book?method=create" method="post">
+
+              Book Title: <input type="text" name="book.name" value=""/>
+              Author: <input type="text" name="book.author" value=""/>
+
+              <input type="submit" value="Submit">
+        </form>
+        </div>
+    </body>
+</html>

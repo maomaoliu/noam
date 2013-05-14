@@ -1,0 +1,16 @@
+<html>
+    <body>
+        <div>
+            <a href="$contextPath$/book?method=index">Return to index.</a>
+        </div>
+        <div>
+            <h3>Book Title: $book.name$</h2>
+            <h3>Author: $book.author$</h3>
+            <p><a href="$contextPath$/comment?method=create&book_id=$book.id$">Add Comment</a></p>
+            $book.comments: { comment |
+                <p> Comment: $comment.content$ <p>
+                <p>    Add By - $comment.author$ </p>
+            }$
+        </div>
+    </body>
+</html>

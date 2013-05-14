@@ -1,0 +1,25 @@
+<html>
+    <body>
+        <div class="add">
+             <a href="$contextPath$/book?method=create">Create</a>
+        </div>
+        <div class="list">
+        <hr/>
+        $books: { book |
+            <ul>
+                <h3>Book Title: <a href="$contextPath$/book?method=show&id=$book.id$">$book.name$</a></h3>
+                <h3>Author: $book.author$</h3>
+                <p><a href="$contextPath$/comment?method=create&book_id=$book.id$">Add Comment</a></p>
+                    $book.comments: { comment |
+                        <li>
+                            <p>Comment: $comment.content$ </p>
+                            <p>Add By - $comment.author$</p>
+                        </li>
+                    }$
+                <p><a href="$contextPath$/book?id=$book.id$&method=delete">Delete</a></p>
+                <hr/>
+            </ul>
+        }$
+        </div>
+    </body>
+</html>

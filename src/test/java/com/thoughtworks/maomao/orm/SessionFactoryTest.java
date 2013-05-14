@@ -1,8 +1,8 @@
-package com.thoughtworks.maomao.noam;
+package com.thoughtworks.maomao.orm;
 
-import com.thoughtworks.maomao.AbstractNoamTest;
-import com.thoughtworks.maomao.model.Book;
-import com.thoughtworks.maomao.model.Comment;
+import com.thoughtworks.maomao.noam.SessionFactory;
+import com.thoughtworks.maomao.orm.model.Book;
+import com.thoughtworks.maomao.orm.model.Comment;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -19,7 +19,7 @@ public class SessionFactoryTest extends AbstractNoamTest {
     @Before
     public void setUp() throws SQLException {
         super.setUp();
-        sessionFactory = new SessionFactory("com.thoughtworks.maomao.model");
+        sessionFactory = new SessionFactory("com.thoughtworks.maomao.orm.model");
     }
 
     @Test
@@ -27,6 +27,19 @@ public class SessionFactoryTest extends AbstractNoamTest {
         List<Book> books = sessionFactory.from(Book.class).list();
         assertEquals(2, books.size());
         Book book = books.get(0);
+
+        assertEquals("Java Book", book.getName());
+        assertEquals("maomao", book.getAuthor());
+        assertEquals(12.34, book.getPrice(), 0.001);
+
+        List<Comment> comments = book.getComments();
+        assertEquals(2, comments.size());
+        assertEquals("nice java book", comments.get(0).getContent());
+    }
+
+    @Test
+    public void should_get_book_by_id() throws Exception {
+        Book book = sessionFactory.from(Book.class).getById(1);
 
         assertEquals("Java Book", book.getName());
         assertEquals("maomao", book.getAuthor());
@@ -61,7 +74,7 @@ public class SessionFactoryTest extends AbstractNoamTest {
 
     @Test
     public void should_update_book() throws Exception {
-        Book book = sessionFactory.from(Book.class).where("id = 1").unique();
+        Book book = sessionFactory.from(Book.class).getById(1);
         assertEquals("Java Book", book.getName());
         assertEquals("maomao", book.getAuthor());
         assertEquals(12.34, book.getPrice(), 0.001);
@@ -71,7 +84,7 @@ public class SessionFactoryTest extends AbstractNoamTest {
         book.setPrice(21.65f);
         sessionFactory.save(book);
 
-        Book newBook = sessionFactory.from(Book.class).where("id = 1").unique();
+        Book newBook = sessionFactory.from(Book.class).getById(1);
         assertEquals("Java Book 2", newBook.getName());
         assertEquals("maomao liu", newBook.getAuthor());
         assertEquals(21.65, newBook.getPrice(), 0.001);
@@ -79,7 +92,7 @@ public class SessionFactoryTest extends AbstractNoamTest {
 
     @Test
     public void should_delete_book() throws SQLException {
-        Book book = sessionFactory.from(Book.class).where("id = 1").unique();
+        Book book = sessionFactory.from(Book.class).getById(1);
         assertEquals("Java Book", book.getName());
         List<Comment> comments = book.getComments();
         assertEquals(2, comments.size());
@@ -87,9 +100,9 @@ public class SessionFactoryTest extends AbstractNoamTest {
         int result = sessionFactory.delete(book);
 
         assertEquals(1, result);
-        assertNull(sessionFactory.from(Book.class).where("id = 1").unique());
+        assertNull(sessionFactory.from(Book.class).getById(1));
         for (Comment comment : comments) {
-            assertNull(sessionFactory.from(Comment.class).where("id = " + comment.getId()).unique());
+            assertNull(sessionFactory.from(Comment.class).getById(comment.getId()));
         }
     }
 
@@ -103,7 +116,7 @@ public class SessionFactoryTest extends AbstractNoamTest {
             break;
         }
 
-        Comment comment = sessionFactory.from(Comment.class).where("id = 3").unique();
+        Comment comment = sessionFactory.from(Comment.class).getById(3);
         sessionFactory.delete(comment);
 
         assertEquals((Integer)3, books.get(1).getComments().get(0).getId());;
