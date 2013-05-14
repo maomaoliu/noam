@@ -29,6 +29,7 @@ public class DeleteCriteria {
                 Class genericType = (Class) genericReturnType.getActualTypeArguments()[0];
                 if (sessionFactory.isModel(genericType)) {
                     Collection associations = (Collection) FieldValueUtil.getValue(instance, field.getName());
+                    if(associations == null) continue;
                     for (Object association : associations) {
                         sessionFactory.delete(association);
                     }

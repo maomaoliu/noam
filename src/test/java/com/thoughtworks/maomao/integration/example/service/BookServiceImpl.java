@@ -10,8 +10,12 @@ import java.util.List;
 @Service
 public class BookServiceImpl implements BookService {
 
-//    @Glue
-    private SessionFactory sessionFactory = new SessionFactory("com.thoughtworks.maomao.integration.example");;
+    private SessionFactory sessionFactory;
+
+    @Glue
+    public BookServiceImpl(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
+    }
 
     @Override
     public Book getBook(Integer id) {

@@ -42,8 +42,7 @@ public abstract class AbstractWebTest {
     }
 
     public List<String> getSqls(){
-            File sqlFile = new File(getClass().getResource("/com/thoughtworks/maomao/integration/create.sql").getFile());
-            System.out.println(sqlFile.getAbsolutePath());
+            File sqlFile = new File(getClass().getResource("/com/thoughtworks/maomao/integration/example/create.sql").getFile());
             if (sqlFile.exists()) {
                 List<String> sqls = null;
                 try {

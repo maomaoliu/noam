@@ -16,7 +16,6 @@ public class CommentController {
     private CommentService commentService;
 
     public Map create(@Param(value = "book_id") Integer bookId) {
-        System.out.println("###" + bookId);
         Comment comment = new Comment();
         HashMap map = new HashMap();
         map.put("comment", comment);
@@ -28,7 +27,6 @@ public class CommentController {
         Book book = new Book();
         book.setId(bookId);
         comment.setBook(book);
-        System.out.println("CreatePost");
         comment = commentService.addComment(comment);
         return "book?method=show&id=" + comment.getBook().getId();
     }

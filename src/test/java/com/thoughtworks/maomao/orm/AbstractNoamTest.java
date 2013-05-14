@@ -28,7 +28,6 @@ public abstract class AbstractNoamTest {
         Statement statement = connection.createStatement();
         try {
             File sqlFile = new File(getClass().getResource("/com/thoughtworks/maomao/orm/create.sql").getFile());
-            System.out.println(sqlFile.getAbsolutePath());
             if (sqlFile.exists()) {
                 List<String> sqls = Files.readLines(sqlFile, Charsets.UTF_8);
                 for (String sql : sqls) {
