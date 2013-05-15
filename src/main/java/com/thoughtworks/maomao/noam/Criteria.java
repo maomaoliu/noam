@@ -3,7 +3,6 @@ package com.thoughtworks.maomao.noam;
 import com.thoughtworks.maomao.core.util.ModelAssembler;
 import net.sf.cglib.proxy.Enhancer;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -27,7 +26,7 @@ public class Criteria<T> {
         methodInterceptor = new NoamMethodInterceptor(sessionFactory);
     }
 
-    public List<T> list(){
+    public List<T> list() {
         return list(sql());
     }
 
@@ -35,49 +34,49 @@ public class Criteria<T> {
         return listWithSuperId(sql, null).get(0);
     }
 
-    public Map<Integer,List<T>> listWithSuperId(String sql, String superIdName) {
+    public Map<Integer, List<T>> listWithSuperId(String sql, String superIdName) {
 
-        Map<Integer,List<T>> map = new HashMap<>();
+        Map<Integer, List<T>> map = new HashMap<>();
 
         try {
-            ResultSet resultSet = sessionFactory.executeQuery(sql);
-            while (resultSet.next()) {
-                T instance = createInstance(resultSet);
-                Integer superId = 0;
-                if(superIdName != null){
-                    superId = (Integer) resultSet.getObject(superIdName);
-                }
-                List<T> list = map.get(superId);
-                if(list != null){
-                    list.add(instance);
-                } else {
-                    list = createList();
-                    list.add(instance);
-                    map.put(superId, list);
-                }
-            }
+            queryForList(sql, superIdName, map);
         } catch (Exception e) {
             e.printStackTrace();
         }
         return map;
     }
 
-    private List<T> createList() {
+    private void queryForList(String sql, String superIdName, Map<Integer, List<T>> map) throws Exception {
+        ResultSet resultSet = sessionFactory.executeQuery(sql);
+        while (resultSet.next()) {
+            T instance = createInstance(resultSet);
+            putInstanceInMap(superIdName, map, resultSet, instance);
+        }
+    }
+
+    private void putInstanceInMap(String superIdName, Map<Integer, List<T>> map, ResultSet resultSet, T instance) throws Exception {
+        Integer superId = 0;
+        if (superIdName != null) {
+            superId = (Integer) resultSet.getObject(superIdName);
+        }
+        List<T> list = map.get(superId);
+        if (list != null) {
+            list.add(instance);
+        } else {
+            list = createList();
+            list.add(instance);
+            map.put(superId, list);
+        }
+    }
+
+    private List<T> createList() throws Exception {
         List<T> list;
         list = (List<T>) Enhancer.create(
                 ArrayList.class,
                 new Class[]{CollectionInterface.class},
                 methodInterceptor);
-        try {
-            Method method = list.getClass().getMethod("initCollection");
-            method.invoke(list);
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
+        Method method = list.getClass().getMethod("initCollection");
+        method.invoke(list);
         return list;
     }
 
@@ -106,14 +105,10 @@ public class Criteria<T> {
         return this;
     }
 
-    public T unique() throws SQLException {
+    public T unique() throws Exception {
         ResultSet resultSet = sessionFactory.executeQuery(sql());
-        try {
-            if (resultSet.next()) {
-                return createInstance(resultSet);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (resultSet.next()) {
+            return createInstance(resultSet);
         }
         return null;
     }
@@ -122,7 +117,7 @@ public class Criteria<T> {
         predication = "id = " + id;
         try {
             return unique();
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;

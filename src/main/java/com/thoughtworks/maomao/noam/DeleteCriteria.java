@@ -20,25 +20,32 @@ public class DeleteCriteria {
     }
 
     public int delete() throws SQLException {
+        deleteAssociations();
+        Statement statement = sessionFactory.getStatement();
+        return statement.executeUpdate(deleteSql());
+    }
+
+    private void deleteAssociations() {
         Field[] fields = modelInfo.getModelClass().getDeclaredFields();
         for (Field field : fields) {
             field.setAccessible(true);
             Class<?> returnType = field.getType();
             if (Arrays.asList(returnType.getInterfaces()).contains(Collection.class)) {
-                ParameterizedType genericReturnType = (ParameterizedType) field.getGenericType();
-                Class genericType = (Class) genericReturnType.getActualTypeArguments()[0];
-                if (sessionFactory.isModel(genericType)) {
-                    Collection associations = (Collection) FieldValueUtil.getValue(instance, field.getName());
-                    if(associations == null) continue;
-                    for (Object association : associations) {
-                        sessionFactory.delete(association);
-                    }
-                }
+                deleteAssociation(field);
             }
         }
-        Statement statement = sessionFactory.getStatement();
-        String sql = deleteSql();
-        return statement.executeUpdate(sql);
+    }
+
+    private void deleteAssociation(Field field) {
+        ParameterizedType genericReturnType = (ParameterizedType) field.getGenericType();
+        Class genericType = (Class) genericReturnType.getActualTypeArguments()[0];
+        if (sessionFactory.isModel(genericType)) {
+            Collection associations = (Collection) FieldValueUtil.getValue(instance, field.getName());
+            if (associations == null) return;
+            for (Object association : associations) {
+                sessionFactory.delete(association);
+            }
+        }
     }
 
     private String deleteSql() {

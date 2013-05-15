@@ -14,12 +14,16 @@ public class ModelInfo {
 
     public ModelInfo(Class modelClass) {
         this.modelClass = modelClass;
-        tableName = FieldValueUtil.toUpperUnderscore(modelClass.getSimpleName());
+        this.tableName = FieldValueUtil.toUpperUnderscore(modelClass.getSimpleName());
+        initColumns(modelClass);
+    }
+
+    private void initColumns(Class modelClass) {
         Field[] fields = modelClass.getDeclaredFields();
         for (Field field : fields) {
             field.setAccessible(true);
             if (field.isAnnotationPresent(Column.class)) {
-                columns.add(field.getName());
+                this.columns.add(field.getName());
             }
         }
     }

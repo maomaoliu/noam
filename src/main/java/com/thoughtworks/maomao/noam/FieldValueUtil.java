@@ -2,9 +2,7 @@ package com.thoughtworks.maomao.noam;
 
 import java.lang.reflect.Method;
 
-import static com.google.common.base.CaseFormat.LOWER_CAMEL;
-import static com.google.common.base.CaseFormat.UPPER_CAMEL;
-import static com.google.common.base.CaseFormat.UPPER_UNDERSCORE;
+import static com.google.common.base.CaseFormat.*;
 
 public class FieldValueUtil {
     public static Integer getPrimaryKey(Object instance) {
